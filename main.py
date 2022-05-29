@@ -23,7 +23,13 @@ my_ships_h = en_health = 10
 
 
 def state1():
-    pass
+    global state, c, button, num
+    state = 1
+    button['state'] = tk.DISABLED
+    tk.messagebox.showinfo("SeaBattle: подбор игрока", "Привет. Скоро мы подберем тебе соперника, после чего ты"
+                                                       "сможешь приступить к расстановке кораблей. Когда соперник"
+                                                       "будет подобран, мы оповестим тебя.")
+    data_transfer.start()
 
 
 button = tk.Button(data_transfer.window, text="Начать игру", width=15, height=3, command=state1)
