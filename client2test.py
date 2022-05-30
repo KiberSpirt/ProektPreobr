@@ -40,49 +40,6 @@ def state1():
     c = tk.Canvas(data_transfer.window, width=SQUARE_SIZE * 10, height=SQUARE_SIZE * 10, bg="white")
     c.place(x=30, y=30)
 
-    for i in range(10):
-        for j in range(10):
-            my_field.append(c.create_rectangle(j * SQUARE_SIZE, i * SQUARE_SIZE,
-                                             j * SQUARE_SIZE + SQUARE_SIZE,
-                                             i * SQUARE_SIZE + SQUARE_SIZE, fill="#0070A1"))
-    tk.messagebox.showinfo("SeaBattle: расстановка кораблей", "    Привет снова. Надеюсь, ты ждал не очень долго и без "
-                                                           "происшествий :)\n\n    Клетки можно заполнять частями "
-                                                           "корабля, нажимая на них левой клавишей мыши. Удалять "
-                                                           "часть - правой. Корабли представляют собой строку или "
-                                                           "столбец, размером Nx1 и 1xN соответственно. Какие "
-                                                           "корабли могут быть по размерам и количеству:\n\n    1. "
-                                                           "Одноклеточные корабли (1x1), 4 корабля,"
-                                                           "\n    2. Двуклеточные корабли (2x1), 3 корабля,"
-                                                           "\n    3. Трёхклеточные корабли (3x1), 2 корабля,"
-                                                           "\n    4. Четырёхклеточный корабль (4x1), 1 корабль.\n\n"
-                                                           "    Корабли не должны пересекаться и(или) всячески "
-                                                           "изгибаться. Всё абсолютно как в классическом морском бое. "
-                                                           "Теперь ты можешь начинать создавать флот :) Когда "
-                                                           "закончишь - нажимай на кнопку \"Продолжить\"")
-
-    c.bind("<Button-1>", l_click)
-    c.bind("<Button-3>", r_click)
-
-
-def state2():
-    pass
-
-
-def l_click(event):
-    idx = c.find_withtag(tk.CURRENT)[0]
-    if state == 1:
-        play_map[idx - 1] = '#'
-        c.itemconfig(tk.CURRENT, fill="#12CE10")
-    c.update()
-
-
-def r_click(event):
-    idx = c.find_withtag(tk.CURRENT)[0]
-    if state == 1:
-        play_map[idx - 1] = '*'
-        c.itemconfig(tk.CURRENT, fill="#0070A0")
-    c.update()
-
 
 button = tk.Button(data_transfer.window, text="Начать игру", width=15, height=3, command=state1)
 button.place(x=50, y=30)
