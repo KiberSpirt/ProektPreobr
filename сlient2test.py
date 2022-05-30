@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 
 import data_transfer
+import check_ship_position
+import create_ships
 
 SQUARE_SIZE = 40
 play_map = ['*'] * 100
@@ -65,8 +67,35 @@ def state1():
 
 
 def state2():
-    pass
+    if not check_ship_position.check_field(play_map):
+        messagebox.showwarning("SeaBattle: расстановка кораблей", "Привет. Построенная карта кораблей является "
+                                                                  "неправильной, так как какое-то из правил не было "
+                                                                  "соблюдено:\n\n    1. Размеры кораблей не "
+                                                                  "соблюдены\n "
+                                                                  "  2. Количество кораблей отлично от 10\n    3. "
+                                                                  "Корабли прикосаются друг к другу\n    4. Корабли "
+                                                                  "неверной формы\n\nНапоминаю размеры и количество "
+                                                                  "кораблей:\n\n    1. "
+                                                                  "Одноклеточные корабли (1x1), 4 корабля,"
+                                                                  "\n    2. Двуклеточные корабли (2x1), 3 корабля,"
+                                                                  "\n    3. Трёхклеточные корабли (3x1), 2 корабля,"
+                                                                  "\n    4. Четырёхклеточный корабль (4x1), "
+                                                                  "1 корабль.\n\nПерепроверь и исправь своё поле, "
+                                                                  "а затем нажми сюда ещё раз.")
+        return
 
+    global button, state, c, c2, lb_ban, lb_nab, lb, num
+    state = 2
+    button['state'] = tk.DISABLED
+    messagebox.showinfo("SeaBattle: ожидание игрока", "И ещё раз привет! Ожидай, пока твой соперник не завершит "
+                                                      "расстановку своих кораблей и нажмёт на эту же кнопку. После "
+                                                      "этого сразу же начнётся игра.")
+    global enemy_map, my_ships, my_ship_h, my_ship_pos, enemy_ships, enemy_ship_h, enemy_ship_pos
+    num, enemy_map = data_transfer.wait(play_map)
+    data_transfer.window.geometry("1000x550")
+    button.destroy()
+    my_ships, my_ship_h, my_ship_pos = create_ships.create(play_map)
+    enemy_ships, enemy_ship_h, enemy_ship_pos = create_ships.create(enemy_map)
 
 def l_click(event):
     idx = c.find_withtag(tk.CURRENT)[0]

@@ -3,6 +3,7 @@ from tkinter import messagebox
 
 import data_transfer
 import check_ship_position
+import create_ships
 
 SQUARE_SIZE = 40
 play_map = ['*'] * 100
@@ -89,7 +90,12 @@ def state2():
     messagebox.showinfo("SeaBattle: ожидание игрока", "И ещё раз привет! Ожидай, пока твой соперник не завершит "
                                                       "расстановку своих кораблей и нажмёт на эту же кнопку. После "
                                                       "этого сразу же начнётся игра.")
-
+    global enemy_map, my_ships, my_ship_h, my_ship_pos, enemy_ships, enemy_ship_h, enemy_ship_pos
+    num, enemy_map = data_transfer.wait(play_map)
+    data_transfer.window.geometry("1000x550")
+    button.destroy()
+    my_ships, my_ship_h, my_ship_pos = create_ships.create(play_map)
+    enemy_ships, enemy_ship_h, enemy_ship_pos = create_ships.create(enemy_map)
 
 def l_click(event):
     idx = c.find_withtag(tk.CURRENT)[0]

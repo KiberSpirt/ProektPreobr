@@ -25,5 +25,21 @@ def wait_player():
     s.sendto('1'.encode('ascii'), client[0])
     s.sendto('1'.encode('ascii'), client[1])
 
-while True:
+def get_maps(num):
+    field = [0, 0]
+    for i in range(2):
+        data, addr = s.recvfrom(1024)
+        field[get_client(addr) ^ 1] = data
+    s.sendto('1'.encode('ascii'), client[num])
+    s.sendto('0'.encode('ascii'), client[num ^ 1])
+    s.sendto(field[0], client[0])
+    s.sendto(field[1], client[1])
+    print(field[1])
+
+def game():
     wait_player()
+    get_maps(random.randint(0, 1))
+
+
+while True:
+    game()

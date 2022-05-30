@@ -15,6 +15,16 @@ def up_while_not_data():
         window.update()
         ready = select.select([s], [], [], 0.1)
 
+def wait(my_map):
+    s.sendto(str(my_map).encode('ascii'), server)
+    up_while_not_data()
+    num, addr = s.recvfrom(1024)
+    data, addr = s.recvfrom(1024)
+    num.decode('ascii')
+    data.decode('ascii')
+    data = eval(data)
+    return int(num), data
+
 def start():
     send_cell('1'.encode('ascii'))
     up_while_not_data()
