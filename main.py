@@ -83,6 +83,13 @@ def state2():
                                                                   "а затем нажми сюда ещё раз.")
         return
 
+    global button, state, c, c2, lb_ban, lb_nab, lb, num
+    state = 2
+    button['state'] = tk.DISABLED
+    messagebox.showinfo("SeaBattle: ожидание игрока", "И ещё раз привет! Ожидай, пока твой соперник не завершит "
+                                                      "расстановку своих кораблей и нажмёт на эту же кнопку. После "
+                                                      "этого сразу же начнётся игра.")
+
 
 def l_click(event):
     idx = c.find_withtag(tk.CURRENT)[0]
