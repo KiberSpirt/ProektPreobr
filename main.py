@@ -173,7 +173,27 @@ def print_maps():
             lb['text'] = "Ход соперника"
 
 def fire():
-    pass
+    global num, winner, enemy_ship_h, en_health, enemy_ship_pos, enemy_ships
+    idx = c2.find_withtag(tk.CURRENT)[0] - 1
+    if state == 2 and num == 1:
+        if enemy_map[idx] in ['X', 'D', '/']:
+            messagebox.showwarning("SeaBattle: игра", "Привет. Выбранная клетка уже была посещена раннее. Походи "
+                                                      "ещё раз, но только в ту клетку, которая ещё не была посещена.")
+        else:
+            data_transfer.send_cell(idx)
+            if enemy_map[idx] == '*':
+                enemy_map[idx] = '/'
+                num ^= 1
+            else:
+                enemy_map[idx] = 'X'
+                enemy_ship_h[enemy_ships[idx]] -= 1
+                if enemy_ship_h[enemy_ships[idx]] == 0:
+                    en_health -= 1
+                    for i in enemy_ship_pos[enemy_ships[idx]]:
+                        enemy_map[i] = 'D'
+                    if en_health == 0:
+                        winner = 1
+            print_maps()
 
 
 button = tk.Button(data_transfer.window, text="Начать игру", width=15, height=3, command=state1)
