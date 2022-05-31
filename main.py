@@ -90,12 +90,31 @@ def state2():
     messagebox.showinfo("SeaBattle: ожидание игрока", "И ещё раз привет! Ожидай, пока твой соперник не завершит "
                                                       "расстановку своих кораблей и нажмёт на эту же кнопку. После "
                                                       "этого сразу же начнётся игра.")
+
     global enemy_map, my_ships, my_ship_h, my_ship_pos, enemy_ships, enemy_ship_h, enemy_ship_pos
     num, enemy_map = data_transfer.wait(play_map)
     data_transfer.window.geometry("1000x550")
     button.destroy()
     my_ships, my_ship_h, my_ship_pos = create_ships.create(play_map)
     enemy_ships, enemy_ship_h, enemy_ship_pos = create_ships.create(enemy_map)
+
+    c.place(x=40, y=50)
+    c2 = tk.Canvas(data_transfer.window, width=SQUARE_SIZE * 10, height=SQUARE_SIZE * 10, bg="white")
+    c2.place(x=SQUARE_SIZE * 13, y=50)
+    for i in range(10):
+        for j in range(10):
+            enemy_field.append(c2.create_rectangle(j * SQUARE_SIZE, i * SQUARE_SIZE,
+                                                   j * SQUARE_SIZE + SQUARE_SIZE,
+                                                   i * SQUARE_SIZE + SQUARE_SIZE, fill="#0070A0"))
+    lb['font'] = "Arial 25"
+    lb_ban['text'] = "Поле соперника"
+    lb_nab['text'] = "Твоё поле"
+    lb_nab['font'] = lb_ban['font'] = "Arial 17"
+    lb_nab.place(x=52, y=12.5)
+    lb_ban.place(x=SQUARE_SIZE * 13 + 3, y=12.5)
+
+    c2.bind("<Button-1>", fire)
+    print_maps()
 
 def l_click(event):
     idx = c.find_withtag(tk.CURRENT)[0]
@@ -111,6 +130,50 @@ def r_click(event):
         play_map[idx - 1] = '*'
         c.itemconfig(tk.CURRENT, fill="#0070A0")
     c.update()
+
+def print_maps():
+    col = "kek"
+    global lb, num
+    for i in range(10):
+        for j in range(10):
+            if play_map[i * 10 + j] == '*':
+                col = "#0070A0"
+            if play_map[i * 10 + j] == '/':
+                col = "#004070"
+            if play_map[i * 10 + j] == 'X':
+                col = "#1E9410"
+            if play_map[i * 10 + j] == 'D':
+                col = "#CC0605"
+            if play_map[i * 10 + j] == '#':
+                col = "#12CE10"
+            c.itemconfig(my_field[i * 10 + j], fill=col)
+    for i in range(10):
+        for j in range(10):
+            if enemy_map[i * 10 + j] == '/':
+                col = "#004070"
+            elif enemy_map[i * 10 + j] == 'X':
+                col = "#1E9410"
+            elif enemy_map[i * 10 + j] == 'D':
+                col = "#CC0605"
+            else:
+                if winner == 2:
+                    col = "#0070A0"
+                else:
+                    if enemy_map[i * 10 + j] == '*':
+                        col = "#0070A0"
+                    else:
+                        col = "#12CE10"
+            c2.itemconfig(enemy_field[i * 10 + j], fill=col)
+    if winner == 2:
+        if num == 1:
+            lb.place(x=50, y=470)
+            lb['text'] = "Твой ход"
+        else:
+            lb.place(x=SQUARE_SIZE * 13 + 10, y=470)
+            lb['text'] = "Ход соперника"
+
+def fire():
+    pass
 
 
 button = tk.Button(data_transfer.window, text="Начать игру", width=15, height=3, command=state1)
