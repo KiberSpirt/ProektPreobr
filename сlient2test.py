@@ -4,6 +4,7 @@ from tkinter import messagebox
 import data_transfer
 import check_ship_position
 import create_ships
+import time
 
 SQUARE_SIZE = 40
 play_map = ['*'] * 100
@@ -29,8 +30,8 @@ def state1():
     state = 1
     button['state'] = tk.DISABLED
     tk.messagebox.showinfo("SeaBattle: подбор игрока", "Привет. Скоро мы подберем тебе соперника, после чего ты"
-                                                       "сможешь приступить к расстановке кораблей. Когда соперник"
-                                                       "будет подобран, мы оповестим тебя.")
+                                                    "сможешь приступить к расстановке кораблей. Когда соперник"
+                                                    "будет подобран, мы оповестим тебя.")
     data_transfer.start()
 
     button.destroy()
@@ -45,22 +46,22 @@ def state1():
     for i in range(10):
         for j in range(10):
             my_field.append(c.create_rectangle(j * SQUARE_SIZE, i * SQUARE_SIZE,
-                                               j * SQUARE_SIZE + SQUARE_SIZE,
-                                               i * SQUARE_SIZE + SQUARE_SIZE, fill="#0070A1"))
+                                             j * SQUARE_SIZE + SQUARE_SIZE,
+                                             i * SQUARE_SIZE + SQUARE_SIZE, fill="#0070A1"))
     tk.messagebox.showinfo("SeaBattle: расстановка кораблей", "    Привет снова. Надеюсь, ты ждал не очень долго и без "
-                                                              "происшествий :)\n\n    Клетки можно заполнять частями "
-                                                              "корабля, нажимая на них левой клавишей мыши. Удалять "
-                                                              "часть - правой. Корабли представляют собой строку или "
-                                                              "столбец, размером Nx1 и 1xN соответственно. Какие "
-                                                              "корабли могут быть по размерам и количеству:\n\n    1. "
-                                                              "Одноклеточные корабли (1x1), 4 корабля,"
-                                                              "\n    2. Двуклеточные корабли (2x1), 3 корабля,"
-                                                              "\n    3. Трёхклеточные корабли (3x1), 2 корабля,"
-                                                              "\n    4. Четырёхклеточный корабль (4x1), 1 корабль.\n\n"
-                                                              "    Корабли не должны пересекаться и(или) всячески "
-                                                              "изгибаться. Всё абсолютно как в классическом морском бое. "
-                                                              "Теперь ты можешь начинать создавать флот :) Когда "
-                                                              "закончишь - нажимай на кнопку \"Продолжить\"")
+                                                           "происшествий :)\n\n    Клетки можно заполнять частями "
+                                                           "корабля, нажимая на них левой клавишей мыши. Удалять "
+                                                           "часть - правой. Корабли представляют собой строку или "
+                                                           "столбец, размером Nx1 и 1xN соответственно. Какие "
+                                                           "корабли могут быть по размерам и количеству:\n\n    1. "
+                                                           "Одноклеточные корабли (1x1), 4 корабля,"
+                                                           "\n    2. Двуклеточные корабли (2x1), 3 корабля,"
+                                                           "\n    3. Трёхклеточные корабли (3x1), 2 корабля,"
+                                                           "\n    4. Четырёхклеточный корабль (4x1), 1 корабль.\n\n"
+                                                           "    Корабли не должны пересекаться и(или) всячески "
+                                                           "изгибаться. Всё абсолютно как в классическом морском бое. "
+                                                           "Теперь ты можешь начинать создавать флот :) Когда "
+                                                           "закончишь - нажимай на кнопку \"Продолжить\"")
 
     c.bind("<Button-1>", l_click)
     c.bind("<Button-3>", r_click)
@@ -90,7 +91,6 @@ def state2():
     messagebox.showinfo("SeaBattle: ожидание игрока", "И ещё раз привет! Ожидай, пока твой соперник не завершит "
                                                       "расстановку своих кораблей и нажмёт на эту же кнопку. После "
                                                       "этого сразу же начнётся игра.")
-
     global enemy_map, my_ships, my_ship_h, my_ship_pos, enemy_ships, enemy_ship_h, enemy_ship_pos
     num, enemy_map = data_transfer.wait(play_map)
     data_transfer.window.geometry("1000x550")
@@ -104,8 +104,8 @@ def state2():
     for i in range(10):
         for j in range(10):
             enemy_field.append(c2.create_rectangle(j * SQUARE_SIZE, i * SQUARE_SIZE,
-                                                   j * SQUARE_SIZE + SQUARE_SIZE,
-                                                   i * SQUARE_SIZE + SQUARE_SIZE, fill="#0070A0"))
+                                              j * SQUARE_SIZE + SQUARE_SIZE,
+                                              i * SQUARE_SIZE + SQUARE_SIZE, fill="#0070A0"))
     lb['font'] = "Arial 25"
     lb_ban['text'] = "Поле соперника"
     lb_nab['text'] = "Твоё поле"
@@ -115,6 +115,33 @@ def state2():
 
     c2.bind("<Button-1>", fire)
     print_maps()
+    global winner, my_ships_h
+    while winner == 2:
+        if num == 0:
+            cell = data_transfer.get_cell()
+            if play_map[cell] == '#':
+                play_map[cell] = 'X'
+            else:
+                play_map[cell] = '/'
+                num = 1
+            if play_map[cell] == 'X':
+                my_ship_h[my_ships[cell]] -= 1
+                if my_ship_h[my_ships[cell]] == 0:
+                    my_ships_h -= 1
+                    for i in my_ship_pos[my_ships[cell]]:
+                        play_map[i] = 'D'
+                    if my_ships == 0:
+                        winner = 0
+            print_maps()
+        data_transfer.window.update()
+        time.sleep(0.1)
+    print_maps()
+    lb['text'] = "Победил игрок {}!".format("слева" if winner == 1 else "справа")
+    lb.place(x=300, y=475)
+    if winner == 1:
+        messagebox.showinfo("SeaBattle: конец игры", "Ты выиграл")
+    else:
+        messagebox.showinfo("SeaBattle: конец игры", "Ты проиграл")
 
 
 def l_click(event):
@@ -131,6 +158,30 @@ def r_click(event):
         play_map[idx - 1] = '*'
         c.itemconfig(tk.CURRENT, fill="#0070A0")
     c.update()
+
+
+def fire(event):
+    global num, winner, enemy_ship_h, en_health, enemy_ship_pos, enemy_ships
+    idx = c2.find_withtag(tk.CURRENT)[0] - 1
+    if state == 2 and num == 1:
+        if enemy_map[idx] in ['X', 'D', '/']:
+            messagebox.showwarning("SeaBattle: игра", "Привет. Выбранная клетка уже была посещена раннее. Походи "
+                                                      "ещё раз, но только в ту клетку, которая ещё не была посещена.")
+        else:
+            data_transfer.send_cell(idx)
+            if enemy_map[idx] == '*':
+                enemy_map[idx] = '/'
+                num ^= 1
+            else:
+                enemy_map[idx] = 'X'
+                enemy_ship_h[enemy_ships[idx]] -= 1
+                if enemy_ship_h[enemy_ships[idx]] == 0:
+                    en_health -= 1
+                    for i in enemy_ship_pos[enemy_ships[idx]]:
+                        enemy_map[i] = 'D'
+                    if en_health == 0:
+                        winner = 1
+            print_maps()
 
 
 def print_maps():
@@ -175,35 +226,30 @@ def print_maps():
             lb['text'] = "Ход соперника"
 
 
-def fire():
-    pass
-
-
 button = tk.Button(data_transfer.window, text="Начать игру", width=15, height=3, command=state1)
 button.place(x=50, y=30)
 rules = tk.Button(data_transfer.window, text="Правила игры", width=15, height=3,
-                  command=lambda: messagebox.showinfo("SeaBattle: правила игры",
-                                                      "Привет! Ты решил почитать правила игры. "
-                                                      "Когда игра начнётся, справа ты сможешь "
-                                                      "увидеть поле соперника, слева своё. "
-                                                      "Естественно, с самого начала игры ты "
-                                                      "не сможешь увидеть корабли соперника, "
-                                                      "так же как и "
-                                                      "сопреник твои. Чтобы выстрелить в поле "
-                                                      "соперника, нажми левой клавишей мыши "
-                                                      "на то поле, на "
-                                                      "которое желаешь. Ествественно, все "
-                                                      "выстрелы необходимо совершать по "
-                                                      "очереди. После выстрела по полю с "
-                                                      "кораблём, оно станет тёмно-зелёным. "
-                                                      "Если там ничего не было, оно станет "
-                                                      "тёмно-синим. А если мы убили корабль "
-                                                      "противника, весь корабль станет "
-                                                      "красным. Тоже самое и на твоём "
-                                                      "поле. В случае, если игрок попадает на "
-                                                      "поле с кораблём, ход сопернику не "
-                                                      "передаётся, а он ходит ещё раз.\n\nЭто "
-                                                      "всё. Удачи :)"))
+               command=lambda: messagebox.showinfo("SeaBattle: правила игры", "Привет! Ты решил почитать правила игры. "
+                                                                              "Когда игра начнётся, справа ты сможешь "
+                                                                              "увидеть поле соперника, слева своё. "
+                                                                              "Естественно, с самого начала игры ты "
+                                                                              "не сможешь увидеть корабли соперника, "
+                                                                              "так же как и "
+                                                                              "сопреник твои. Чтобы выстрелить в поле "
+                                                                              "соперника, нажми левой клавишей мыши "
+                                                                              "на то поле, на "
+                                                                              "которое желаешь. Ествественно, все "
+                                                                              "выстрелы необходимо совершать по "
+                                                                              "очереди. После выстрела по полю с "
+                                                                              "кораблём, оно станет тёмно-зелёным. "
+                                                                              "Если там ничего не было, оно станет "
+                                                                              "тёмно-синим. А если мы убили корабль "
+                                                                              "противника, весь корабль станет "
+                                                                              "красным. Тоже самое и на твоём "
+                                                                              "поле. В случае, если игрок попадает на "
+                                                                              "поле с кораблём, ход сопернику не "
+                                                                              "передаётся, а он ходит ещё раз.\n\nЭто "
+                                                                              "всё. Удачи :)"))
 rules.place(x=50, y=90)
 
 data_transfer.window.mainloop()
